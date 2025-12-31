@@ -1,0 +1,15 @@
+[SddmGreeterTheme]
+Name=Material 3 Theme
+Description=A sleek and modern SDDM theme inspired by Material Design 3 principles.
+Author=Edoardo Zerbo <edoardo.zerbo@gmail.com>
+Type=sddm-theme
+Version=2.1
+Website=https://github.com/nautilor/material-sddm-theme
+Screenshot=preview.png
+MainScript=Main.qml
+ConfigFile=theme.conf
+TranslationsDirectory=translations
+Theme-Id=material-3-theme
+Theme-API=2.0
+License=MIT
+QtVersion=6
