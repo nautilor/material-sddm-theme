@@ -4,38 +4,45 @@ import QtQuick.Controls 2.15
 Item {
   implicitHeight: powerButton.height
   implicitWidth: powerButton.width
+  
   Button {
     id: powerButton
-    height: inputHeight
-    width: inputHeight
+    implicitHeight: inputHeight
+    implicitWidth: inputHeight
     hoverEnabled: true
+    
     icon {
       source: Qt.resolvedUrl("../icons/power.svg")
-      height: height / 2
-      width: width / 2
-      color: "#e8e9eb"
+      height: height * .6
+      width: width * .6
+      color: config.OnSurfaceVariant
     }
+    
     background: Rectangle {
       id: powerButtonBackground
-      radius: 50
-      color: "#161820"
-    }
-    states: [
-      State {
-        name: "hovered"
-        when: powerButton.hovered
-        PropertyChanges {
-          target: powerButtonBackground
-          color: "#21232e"
+      radius: inputHeight / 2  // Full corner radius (height / 2)
+      color: "transparent"  // Material 3 standard icon buttons are transparent
+      
+      // State layer overlay
+      Rectangle {
+        anchors.fill: parent
+        radius: parent.radius
+        color: config.OnSurface
+        opacity: {
+          if (powerButton.pressed) return 0.12
+          if (powerButton.hovered) return 0.08
+          return 0
+        }
+        
+        Behavior on opacity {
+          NumberAnimation { 
+            duration: 200
+            easing.type: Easing.OutCubic
+          }
         }
       }
-    ]
-    transitions: Transition {
-      PropertyAnimation {
-        properties: "color"
-        duration: 300
-      }
     }
+    
     onClicked: sddm.powerOff()
   }
 }

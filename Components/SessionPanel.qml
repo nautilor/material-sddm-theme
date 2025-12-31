@@ -1,11 +1,13 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQml.Models 2.15
+import Qt5Compat.GraphicalEffects 1.0
 
 Item {
   property var session: sessionList.currentIndex
   implicitHeight: sessionButton.height
   implicitWidth: sessionButton.width
+  
   DelegateModel {
     id: sessionWrapper
     model: sessionModel
@@ -14,39 +16,41 @@ Item {
       height: inputHeight
       width: parent.width
       highlighted: sessionList.currentIndex == index
+      
       contentItem: Text {
         renderType: Text.NativeRendering
         font {
           family: config.Font
-          pointSize: config.FontSize
-          bold: true
+          pointSize: config.LabelSize
+          weight: Font.Medium
         }
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
-        color: "#e8e9eb"
+        color: config.OnSurface
         text: name
       }
+      
       background: Rectangle {
         id: sessionEntryBackground
-        color: "#21232e"
-        radius: 50
-      }
-      states: [
-        State {
-          name: "hovered"
-          when: sessionEntry.hovered
-          PropertyChanges {
-            target: sessionEntryBackground
-            color: "#2c2e3a"
+        color: config.SurfaceContainerHighest
+        radius: inputHeight / 2  // Full corner radius
+        
+        // State layer overlay
+        Rectangle {
+          anchors.fill: parent
+          radius: parent.radius
+          color: config.OnSurface
+          opacity: sessionEntry.hovered ? 0.08 : 0
+          
+          Behavior on opacity {
+            NumberAnimation { 
+              duration: 200
+              easing.type: Easing.OutCubic
+            }
           }
         }
-      ]
-      transitions: Transition {
-        PropertyAnimation {
-          property: "color"
-          duration: 300
-        }
       }
+      
       MouseArea {
         anchors.fill: parent
         onClicked: {
@@ -56,69 +60,114 @@ Item {
       }
     }
   }
+  
+  // Material 3 Elevation Level 1 - Key shadow
+  DropShadow {
+    anchors.fill: sessionButton
+    horizontalOffset: 0
+    verticalOffset: 1
+    radius: 3
+    samples: 7
+    color: "#26000000"
+    source: sessionButton
+    cached: true
+  }
+  
+  // Material 3 Elevation Level 1 - Ambient shadow
+  DropShadow {
+    anchors.fill: sessionButton
+    horizontalOffset: 0
+    verticalOffset: 1
+    radius: 2
+    samples: 5
+    color: "#4D000000"
+    source: sessionButton
+    cached: true
+  }
+  
   Button {
     id: sessionButton
-    height: inputHeight
-    width: inputHeight
+    implicitHeight: inputHeight
+    implicitWidth: inputHeight
     hoverEnabled: true
+    
     icon {
       source: Qt.resolvedUrl("../icons/settings.svg")
-      height: height
-      width: width
-      color: "#e8e9eb"
+      height: height * .6
+      width: width * .6
+      color: config.OnSurfaceVariant
     }
+    
     background: Rectangle {
       id: sessionButtonBackground
-      color: "#161820"
-      radius: 50
-    }
-    states: [
-      State {
-        name: "pressed"
-        when: sessionButton.down
-        PropertyChanges {
-          target: sessionButtonBackground
-          color: "#0f111a"
+      color: config.SurfaceContainerHighest
+      radius: inputHeight / 2  // Full corner radius
+      
+      // State layer overlay
+      Rectangle {
+        anchors.fill: parent
+        radius: parent.radius
+        color: config.OnSurface
+        opacity: {
+          if (sessionButton.pressed) return 0.12
+          if (sessionButton.hovered) return 0.08
+          return 0
         }
-      },
-      State {
-        name: "hovered"
-        when: sessionButton.hovered
-        PropertyChanges {
-          target: sessionButtonBackground
-          color: "#21232e"
+        
+        Behavior on opacity {
+          NumberAnimation { 
+            duration: 200
+            easing.type: Easing.OutCubic
+          }
         }
-      },
-      State {
-        name: "selection"
-        when: sessionPopup.visible
-        PropertyChanges {
-          target: sessionButtonBackground
-					color: "#161820"        
-				}
-      }
-    ]
-    transitions: Transition {
-      PropertyAnimation {
-        properties: "color"
-        duration: 150
       }
     }
+    
     onClicked: {
       sessionPopup.visible ? sessionPopup.close() : sessionPopup.open()
-      sessionButton.state = "pressed"
     }
   }
+  
   Popup {
     id: sessionPopup
     width: inputWidth + padding * 2
     x: (sessionButton.width + sessionList.spacing) * -7.6
     y: -(contentHeight + padding * 2) + sessionButton.height
     padding: inputHeight / 10
-    background: Rectangle {
-      radius: 50
-      color: "#161820"
+    
+    background: Item {
+      // Material 3 Elevation Level 3 - Key shadow
+      DropShadow {
+        anchors.fill: popupBg
+        horizontalOffset: 0
+        verticalOffset: 4
+        radius: 8
+        samples: 17
+        color: "#26000000"
+        source: popupBg
+        cached: true
+      }
+      
+      // Material 3 Elevation Level 3 - Ambient shadow
+      DropShadow {
+        anchors.fill: popupBg
+        horizontalOffset: 0
+        verticalOffset: 4
+        radius: 6
+        samples: 13
+        color: "#4D000000"
+        source: popupBg
+        cached: true
+      }
+      
+      Rectangle {
+        id: popupBg
+        anchors.fill: parent
+        radius: 28  // Extra large corner radius
+        color: config.SurfaceContainer
+      }
     }
+    
     contentItem: ListView {
       id: sessionList
       implicitHeight: contentHeight
@@ -127,31 +176,42 @@ Item {
       currentIndex: sessionModel.lastIndex
       clip: true
     }
+    
     enter: Transition {
       ParallelAnimation {
         NumberAnimation {
           property: "opacity"
           from: 0
           to: 1
-          duration: 400
-          easing.type: Easing.OutExpo
+          duration: 300
+          easing.type: Easing.OutCubic
         }
         NumberAnimation {
-          property: "x"
-          from: sessionPopup.x + (inputWidth * 0.1)
-          to: sessionPopup.x
-          duration: 500
-          easing.type: Easing.OutExpo
+          property: "scale"
+          from: 0.9
+          to: 1.0
+          duration: 300
+          easing.type: Easing.OutCubic
         }
       }
     }
+    
     exit: Transition {
-      NumberAnimation {
-        property: "opacity"
-        from: 1
-        to: 0
-        duration: 300
-        easing.type: Easing.OutExpo
+      ParallelAnimation {
+        NumberAnimation {
+          property: "opacity"
+          from: 1
+          to: 0
+          duration: 200
+          easing.type: Easing.OutCubic
+        }
+        NumberAnimation {
+          property: "scale"
+          from: 1.0
+          to: 0.9
+          duration: 200
+          easing.type: Easing.OutCubic
+        }
       }
     }
   }

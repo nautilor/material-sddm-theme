@@ -7,11 +7,13 @@ Item {
   id: root
   height: Screen.height
   width: Screen.width
-	Rectangle {
-		id: background
-		anchors.fill: parent
-		color: "#21232e"
-	}
+  
+  Rectangle {
+    id: background
+    anchors.fill: parent
+    color: config.Surface  // Use Material 3 surface color
+  }
+  
   Item {
     id: mainPanel
     z: 3
@@ -19,10 +21,12 @@ Item {
       fill: parent
       margins: 50
     }
+    
     Clock {
       id: time
       visible: config.ClockEnabled == "true" ? true : false
     }
+    
     LoginPanel {
       id: loginPanel
       anchors.fill: parent

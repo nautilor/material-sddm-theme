@@ -14,42 +14,66 @@ TextField {
 	horizontalAlignment: TextInput.AlignHCenter
 	font {
 		family: config.Font
-		pointSize: config.FontSize
-		bold: true
+		pointSize: config.BodySize
+		weight: Font.Normal
 	}
-	color: "#e8e9eb"
-	placeholderTextColor: "#e8e9eb"
+	color: config.OnSurface
+	placeholderTextColor: config.OnSurfaceVariant
+	selectionColor: config.Primary
 	onAccepted: loginButton.clicked()
+	
 	background: Item {
 		implicitWidth: 280
 		implicitHeight: 56
 
+		// Material 3 Elevation Level 1 - Key shadow
 		DropShadow {
 			anchors.fill: bg
 			horizontalOffset: 0
 			verticalOffset: 1
-			radius: 12
-			samples: 24
-			color: "#1F000000"
+			radius: 3
+			samples: 7
+			color: "#26000000"
 			source: bg
+			cached: true
 		}
 
+		// Material 3 Elevation Level 1 - Ambient shadow
 		DropShadow {
 			anchors.fill: bg
 			horizontalOffset: 0
-			verticalOffset: 0
-			radius: 4
-			samples: 16
-			color: "#14000000"
+			verticalOffset: 1
+			radius: 2
+			samples: 5
+			color: "#4D000000"
 			source: bg
+			cached: true
 		}
 
 		Rectangle {
 			id: bg
 			anchors.fill: parent
-			radius: 50
-			color: passwordField.hovered ? "#21232e" : "#161820"
+			radius: 28  // Full rounding (half of 56)
+			color: config.SurfaceContainerHighest
+			
+			// State layer overlay
+			Rectangle {
+				anchors.fill: parent
+				radius: parent.radius
+				color: config.OnSurface
+				opacity: {
+					if (passwordField.activeFocus) return 0.12
+					if (passwordField.hovered) return 0.08
+					return 0
+				}
+				
+				Behavior on opacity {
+					NumberAnimation { 
+						duration: 200
+						easing.type: Easing.OutCubic
+					}
+				}
+			}
 		}
 	}
 }
-

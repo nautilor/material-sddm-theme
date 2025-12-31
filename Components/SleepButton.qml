@@ -4,38 +4,45 @@ import QtQuick.Controls 2.15
 Item {
   implicitHeight: sleepButton.height
   implicitWidth: sleepButton.width
+  
   Button {
     id: sleepButton
-    height: inputHeight
-    width: inputHeight
+    implicitHeight: inputHeight
+    implicitWidth: inputHeight
     hoverEnabled: true
+    
     icon {
       source: Qt.resolvedUrl("../icons/sleep.svg")
-      height: height
-      width: width
-      color: "#e8e9eb"
+      height: height * .6
+      width: width * .6
+      color: config.OnSurfaceVariant
     }
+    
     background: Rectangle {
       id: sleepButtonBg
-      color: "#161820"
-      radius: 50
-    }
-    states: [
-      State {
-        name: "hovered"
-        when: sleepButton.hovered
-        PropertyChanges {
-          target: sleepButtonBg
-          color: "#21232e"
+      radius: inputHeight / 2  // Full corner radius (height / 2)
+      color: "transparent"  // Material 3 standard icon buttons are transparent
+      
+      // State layer overlay
+      Rectangle {
+        anchors.fill: parent
+        radius: parent.radius
+        color: config.OnSurface
+        opacity: {
+          if (sleepButton.pressed) return 0.12
+          if (sleepButton.hovered) return 0.08
+          return 0
+        }
+        
+        Behavior on opacity {
+          NumberAnimation { 
+            duration: 200
+            easing.type: Easing.OutCubic
+          }
         }
       }
-    ]
-    transitions: Transition {
-      PropertyAnimation {
-        properties: "color"
-        duration: 300
-      }
     }
+    
     onClicked: sddm.suspend()
   }
 }

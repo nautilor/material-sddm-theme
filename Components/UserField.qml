@@ -2,77 +2,78 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import Qt5Compat.GraphicalEffects 1.0
 
-	TextField {
-		id: userField
-		height: inputHeight
-		width: inputWidth
-		selectByMouse: true
-		echoMode: TextInput.Normal
-		selectionColor: "#7aa2f7"
-		renderType: Text.NativeRendering
-		font {
-			family: config.Font
-			pointSize: config.FontSize
-			bold: true
+TextField {
+	visible: config.UserField == "true" ? true : false
+	id: userField
+	height: inputHeight
+	width: inputWidth
+	selectByMouse: true
+	echoMode: TextInput.Normal
+	selectionColor: config.Primary
+	renderType: Text.NativeRendering
+	font {
+		family: config.Font
+		pointSize: config.BodySize
+		weight: Font.Normal
+	}
+	color: config.OnSurface
+	placeholderTextColor: config.OnSurfaceVariant
+	horizontalAlignment: Text.AlignHCenter
+	placeholderText: "Username"
+	text: userModel.lastUser
+	
+	background: Item {
+		implicitWidth: 280
+		implicitHeight: 56
+
+		// Material 3 Elevation Level 1 - Key shadow
+		DropShadow {
+			anchors.fill: bg
+			horizontalOffset: 0
+			verticalOffset: 1
+			radius: 3
+			samples: 7
+			color: "#26000000"
+			source: bg
+			cached: true
 		}
-		color: "#e8e9eb"
-		placeholderTextColor: "#e8e9eb"
-		horizontalAlignment: Text.AlignHCenter
-		placeholderText: "Username"
-		text: userModel.lastUser
-		background: Item {
-			implicitWidth: 280
-			implicitHeight: 56
 
-			DropShadow {
-				anchors.fill: bg
-				horizontalOffset: 0
-				verticalOffset: 1
-				radius: 12
-				samples: 24
-				color: "#1F000000"
-				source: bg
-			}
+		// Material 3 Elevation Level 1 - Ambient shadow
+		DropShadow {
+			anchors.fill: bg
+			horizontalOffset: 0
+			verticalOffset: 1
+			radius: 2
+			samples: 5
+			color: "#4D000000"
+			source: bg
+			cached: true
+		}
 
-			DropShadow {
-				anchors.fill: bg
-				horizontalOffset: 0
-				verticalOffset: 0
-				radius: 4
-				samples: 16
-				color: "#14000000"
-				source: bg
-			}
-
+		Rectangle {
+			id: bg
+			anchors.fill: parent
+			radius: 28  // Full rounding (half of 56)
+			color: config.SurfaceContainerHighest
+			
+			// State layer overlay
 			Rectangle {
-				id: bg
 				anchors.fill: parent
-				radius: 50
-				color: passwordField.hovered ? "#21232e" : "#161820"
-			}
-		}
-		states: [
-			State {
-				name: "focused"
-				when: userField.activeFocus
-				PropertyChanges {
-					target: userFieldBackground
-					color: "#161820"
+				radius: parent.radius
+				color: config.OnSurface
+				opacity: {
+					if (userField.activeFocus) return 0.12
+					if (userField.hovered) return 0.08
+					return 0
 				}
-			},
-			State {
-				name: "hovered"
-				when: userField.hovered
-				PropertyChanges {
-					target: userFieldBackground
-					color: "#21232e"
+				
+				Behavior on opacity {
+					NumberAnimation { 
+						duration: 200
+						easing.type: Easing.OutCubic
+					}
 				}
-			}
-		]
-		transitions: Transition {
-			PropertyAnimation {
-				properties: "color"
-				duration: 300
 			}
 		}
 	}
+}
