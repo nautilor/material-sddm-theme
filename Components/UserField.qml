@@ -2,7 +2,6 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import Qt5Compat.GraphicalEffects 1.0
 
-Item {
 	TextField {
 		id: userField
 		height: inputHeight
@@ -21,10 +20,36 @@ Item {
 		horizontalAlignment: Text.AlignHCenter
 		placeholderText: "Username"
 		text: userModel.lastUser
-		background: Rectangle {
-			id: userFieldBackground
-			color: "#161820"
-			radius: 50
+		background: Item {
+			implicitWidth: 280
+			implicitHeight: 56
+
+			DropShadow {
+				anchors.fill: bg
+				horizontalOffset: 0
+				verticalOffset: 1
+				radius: 12
+				samples: 24
+				color: "#1F000000"
+				source: bg
+			}
+
+			DropShadow {
+				anchors.fill: bg
+				horizontalOffset: 0
+				verticalOffset: 0
+				radius: 4
+				samples: 16
+				color: "#14000000"
+				source: bg
+			}
+
+			Rectangle {
+				id: bg
+				anchors.fill: parent
+				radius: 50
+				color: passwordField.hovered ? "#21232e" : "#161820"
+			}
 		}
 		states: [
 			State {
@@ -51,23 +76,3 @@ Item {
 			}
 		}
 	}
-		DropShadow {
-			anchors.fill: bg
-			horizontalOffset: 0
-			verticalOffset: 1
-			radius: 12
-			samples: 24
-			color: "#1F000000"
-			source: bg
-		}
-
-		DropShadow {
-			anchors.fill: bg
-			horizontalOffset: 0
-			verticalOffset: 0
-			radius: 4
-			samples: 16
-			color: "#14000000"
-			source: bg
-		}
-}
