@@ -3,6 +3,7 @@ This repository contains a Material 3 theme for SDDM (Simple Desktop Display Man
 
 ## Preview
 ![Material 3 SDDM Theme Preview](preview.png)
+![Material 3 SDDM Theme Preview Clear](preview_clear.png)
 
 ## Requirements
 - SDDM installed on your system.
